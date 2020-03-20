@@ -52,8 +52,8 @@ class grid(object):
 
 running = True
 #window dimensions:
-w = 1020
-h = 600
+w = 1200
+h = 900
 num_rows = 30
 
 window = pygame.display.set_mode((w,h))
@@ -70,7 +70,7 @@ start = -1
 end = -1
 
 while running:
-    pygame.time.delay(120)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -112,7 +112,7 @@ while running:
             for vertex in path:
                 if vertex != start and vertex != end:
                     grid.draw_vertex(window,vertex,(0,0,255))
-                pygame.time.delay(60)
+                pygame.time.delay(50)
                 pygame.display.update()
             print("The cost of the shortest path is " + str(len(path)-1))
         else:
