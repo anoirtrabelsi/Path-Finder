@@ -3,6 +3,10 @@ import pygame
 import Graph as graph
 import math
 
+#This class represents the GUI
+#Select start then end vertex then draw obstacles with the mouse
+#Hit the Enter key
+
 pygame.init()
 
 
@@ -126,13 +130,13 @@ while running:
     if config and not finished:
         distances = grid.computeDistances(end)
         #path = grph.a_star(start,end, distances)
-        path, order = grph.a_star(start, end, distances)
+        path, order = grph.greedy_BFS(start, end, distances)
 
         if path:
             for vertex in order:
                 if vertex != start and vertex != end:
                     grid.draw_vertex(window, vertex, (247, 247, 89))
-                pygame.time.delay(50)
+                pygame.time.delay(20)
                 pygame.display.update()
             for vertex in path:
                 if vertex != start and vertex != end:

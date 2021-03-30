@@ -108,7 +108,7 @@ class Graph(object):
             (vertex, path) = queue.pop(0)
             if vertex not in visited:
                 if vertex == des:
-                    return [path,visited_ordered]
+                    return [path, visited_ordered]
                 visited.add(vertex)
                 visited_ordered.append(vertex)
                 for (node, cost) in self.get_neighbours(vertex):
@@ -117,7 +117,7 @@ class Graph(object):
         print("No path has been found")
         return None
 
-    def dijkstra(self, src, dest):
+    def search(self, src, dest, heuristic):
         if src not in self.vertices or dest not in self.vertices:
             return None
 
@@ -139,7 +139,7 @@ class Graph(object):
         q = [src]
 
         while q:
-            next = min(q, key=lambda v: dist[v])
+            next = min(q, key=heuristic(dist))
             # remove element with shortest distance
             q.remove(next)
             # if we reached destination or smallest distance is infinite then break
@@ -172,66 +172,30 @@ class Graph(object):
 
         #print("The shortest path is: " + " -> ".join(path) + "\ncost = "+ str(dist[next]))
         return [path, visited_ordered]
+
+    def dijkstra(self, src, dest):
+        def heuristic(dist):
+            def h(v):
+                return dist[v]
+            return h
+        return self.search(src, dest, heuristic)
 
     def a_star(self, src, dest, distances):
+        def heuristic(dist):
+            def h(v):
+                return dist[v] + distances[v]
+            return h
+        return self.search(src, dest, heuristic)
 
-        if src not in self.vertices or dest not in self.vertices:
-            return None
-
-        inf = float('inf')
-
-        # distance to source = 0; distance to rest nodes = infinity
-        dist = {vertex: inf for vertex in self.vertices}
-        dist[src] = 0
-        # initialize previous:
-        prev = {vertex: None for vertex in self.vertices}
-        # neighbours of each vertex:
-        neighbours = {vertex: self.get_neighbours(
-            vertex) for vertex in self.vertices}
-
-        # set of visited nodes
-        visited = set()
-        visited.add(src)
-        visited_ordered = [src]
-        q = [src]
-
-        while q:
-            next = min(q, key=lambda v: dist[v] + distances[v])
-            # remove element with shortest distance
-            q.remove(next)
-            # if we reached destination or smallest distance is infinite then break
-            if next == dest:
-                break
-
-            for v, cost in neighbours[next]:
-                if v not in visited:
-                    visited.add(v)
-                    visited_ordered.append(v)
-                    q.append(v)
-                    new_dist = dist[next] + cost
-                    if new_dist < dist[v]:
-                        dist[v] = new_dist
-                        prev[v] = next
-
-            if len(q) == 0:
-                print("Cannot reach destination!")
-                return ""
-
-        # build the path
-        path = deque()
-
-        while prev[dest]:
-            path.appendleft(dest)
-            dest = prev[dest]
-
-        # add source to beginning of the path
-        path.appendleft(src)
-
-        #print("The shortest path is: " + " -> ".join(path) + "\ncost = "+ str(dist[next]))
-        return [path, visited_ordered]
-
+    def greedy_BFS(self, src, dest, distances):
+        def heuristic(dist):
+            def h(v):
+                return distances[v]
+            return h
+        return self.search(src, dest, heuristic)
 
 #####################################################################################################################
+
 
 g = Graph({"a": [("b", 7), ("c", 9), ("f", 14)], "b":  [("c", 10),
                                                         ("d", 15)], "c": [("d", 11), ("f", 2), ("x", 9)],  "d": [("e", 6)],
